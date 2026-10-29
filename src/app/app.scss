@@ -84,6 +84,11 @@
 
         .row {
             border-radius: 15px;
+            flex-wrap: nowrap;
+            width: fit-content;
+            overflow-x: scroll;
+
+            scrollbar-width: none;
 
             .box {
                 padding: 0px;
@@ -151,6 +156,20 @@
         border-radius: 10px;
         user-select: none;
         overflow: hidden;
+        transition-duration: .5s;
+        transform: rotateY(0deg);
+
+        &.rotate {
+            transform: rotateY(360deg);
+        }
+
+        &.shake {
+            animation: shake .3s alternate ease-in-out;
+        }
+
+        &.onIt {
+            animation: onIt .3s alternate ease-in-out;
+        }
 
         @include responsive(350) {
             @include size(280px, 280px);

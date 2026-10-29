@@ -35,9 +35,12 @@ export class App {
 
   public pressedNumber = "";
 
-  public openPopup(popup: HTMLElement, selectedImage: HTMLImageElement, popupImage: HTMLImageElement) {
+  public popupEle!: HTMLElement;
+
+  public openPopup(popup: HTMLElement, popupEle: HTMLElement, selectedImage: HTMLImageElement, popupImage: HTMLImageElement) {
     this.selectedImage = selectedImage;
     this.popupImage = popupImage;
+    this.popupEle = popupEle;
 
     this.currentImageIndex = Number(this.selectedImage.getAttribute("data-index"));
 
@@ -45,6 +48,7 @@ export class App {
 
     setTimeout(function () {
       popup.classList.add("show");
+      popupEle.classList.add("rotate");
     }, 1);
 
     popupImage.src = this.selectedImage.src;
@@ -53,6 +57,7 @@ export class App {
   public closePopup(popup: HTMLElement, e: Event) {
     e.stopPropagation();
     popup.classList.remove("show");
+    this.popupEle.classList.remove("rotate");
 
     setTimeout(function () {
       popup.classList.remove("active");
@@ -84,19 +89,45 @@ export class App {
 
       const number = Number(this.pressedNumber);
       if (number >= 1 && number <= this.images.length) {
-        this.currentImageIndex = number - 1;
-        this.popupImage.src = this.images[this.currentImageIndex].src;
 
-        setTimeout(() => {
+        if (this.currentImageIndex != (number - 1)) {
+          this.currentImageIndex = (number - 1);
+          this.popupImage.src = this.images[this.currentImageIndex].src;
+
+          setTimeout(() => {
+            this.pressedNumber = '';
+          }, 200)
+        } else {
+          this.popupEle.classList.add("onIt");
+
+          setTimeout(() => {
+            this.popupEle.classList.remove("onIt");
+          }, 300);
+
           this.pressedNumber = '';
-        }, 200)
+        }
       }
+    } else {
+      this.popupEle.classList.add("shake");
+
+      setTimeout(() => {
+        this.popupEle.classList.remove("shake");
+      }, 300);
     }
   }
 
   public changeActive(index: number) {
-    this.currentImageIndex = index;
-    let newSrc = this.images[this.currentImageIndex].src;
-    this.popupImage.src = newSrc;
+
+    if (this.currentImageIndex != index) {
+      this.currentImageIndex = index;
+      let newSrc = this.images[this.currentImageIndex].src;
+      this.popupImage.src = newSrc;
+    } else {
+      this.popupEle.classList.add("onIt");
+
+      setTimeout(() => {
+        this.popupEle.classList.remove("onIt");
+      }, 300);
+    }
   }
 }
