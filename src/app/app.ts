@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, HostListener, signal } from '@angular/core';
 
 type Cars = { 'name': string, 'src': string }
 
@@ -29,9 +29,11 @@ export class App {
 
   public selectedImage!: HTMLImageElement;
 
-  public popupImage! : HTMLImageElement;
+  public popupImage!: HTMLImageElement;
 
   public currentImageIndex: number = 0;
+
+  public pressedNumber = "";
 
   public openPopup(popup: HTMLElement, selectedImage: HTMLImageElement, popupImage: HTMLImageElement) {
     this.selectedImage = selectedImage;
@@ -71,7 +73,28 @@ export class App {
     image.src = this.images[this.currentImageIndex].src;
   }
 
-  public changeActive(index : number){
+  @HostListener("window:keyup", ['$event'])
+  public keyboard(e: KeyboardEvent) {
+    if (e.key == 'ArrowRight') {
+      this.next(this.popupImage);
+    } else if (e.key == 'ArrowLeft') {
+      this.prev(this.popupImage);
+    } else if (/^[0-9]$/.test(e.key)) {
+      this.pressedNumber += e.key;
+
+      const number = Number(this.pressedNumber);
+      if (number >= 1 && number <= this.images.length) {
+        this.currentImageIndex = number - 1;
+        this.popupImage.src = this.images[this.currentImageIndex].src;
+
+        setTimeout(() => {
+          this.pressedNumber = '';
+        }, 200)
+      }
+    }
+  }
+
+  public changeActive(index: number) {
     this.currentImageIndex = index;
     let newSrc = this.images[this.currentImageIndex].src;
     this.popupImage.src = newSrc;
